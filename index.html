@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <title>Catálogo de Serviços - Simulação</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f4f6f9;
+      padding: 40px;
+    }
+
+    .card {
+      max-width: 500px;
+      margin: auto;
+      background: #fff;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+
+    .header {
+      background: #0b4da2; 
+      color: #fff;
+      padding: 14px 18px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .content {
+      padding: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #333;
+    }
+
+    select {
+      width: 100%;
+      padding: 10px;
+      margin-bottom: 16px;
+      border-radius: 6px;
+      border: 1px solid #ccc;
+      font-size: 14px;
+    }
+
+    .resumo {
+      font-size: 13px;
+      color: #555;
+      margin-top: 10px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    <div class="header">IT Request</div>
+
+    <div class="content">
+      <label for="catalogo">Catálogo de serviços</label>
+      <select id="catalogo">
+        <option value="">Selecione…</option>
+      </select>
+
+      <label for="subcatalogo">Subcatálogo</label>
+      <select id="subcatalogo" disabled>
+        <option value="">Selecione um catálogo primeiro…</option>
+      </select>
+
+      <div class="resumo" id="resumo"></div>
+    </div>
+  </div>
+
+  <script>
+    const dados = {
+      "Acessos": [
+        "Criação de conta",
+        "Problemas de acesso à conta",
+        "Solicitar acessos",
+        "Remover acessos",
+        "Solicitar acesso admin"
+      ],
+      "Aquisição de recursos de TI": [
+        "Compra de hardware",
+        "Sistemas",
+        "Softwares comerciais"
+      ],
+      "Solicitar suporte": [
+        "Computador",
+        "Periféricos",
+        "Impressoras",
+        "E-mail",
+        "Telefonia",
+        "Software",
+        "Movimentação de ativos",
+        "Empréstimo de ativos",
+        "SE Suite",
+        "Wi-fi visitantes",
+        "VPN/WARP",
+        "Manutenção de rede",
+        "Liberação de sites ou portas",
+        "Configuração DNS",
+        "Servidor",
+        "Backup de dados",
+        "Alertas"
+      ],
+      "Gerenciar ativos": [
+        "Descarte de ativos",
+        "Orçamento de reparo"
+      ]
+    };
+
+    // Tooltip
+    const tooltips = {
+      "Periféricos": "Ex.: Mouse, teclado, headset",
+      "Computador": "Ex.: Notebook, desktop, não liga, lentidão",
+      "E-mail": "Ex.: Erro ao enviar, configurar assinatura",
+      "VPN/WARP": "Ex.: Erro de conexão, acesso externo",
+      "Impressoras": "Ex.: Não imprime, erro de fila",
+      "Software": "Ex.: Teams, Word, Power BI, Adobe Reader",
+      "Manutenção de rede": "Ex.: Internet lenta, sem conexão",
+      "Liberação de sites ou portas": "Ex.: site bloqueado, acesso a sistema"
+    };
+
+    const catalogo = document.getElementById("catalogo");
+    const subcatalogo = document.getElementById("subcatalogo");
+    const resumo = document.getElementById("resumo");
+
+    Object.keys(dados).forEach(cat => {
+      const option = document.createElement("option");
+      option.value = cat;
+      option.textContent = cat;
+      catalogo.appendChild(option);
+    });
+
+    catalogo.addEventListener("change", () => {
+      subcatalogo.innerHTML = "";
+
+      if (!catalogo.value) {
+        subcatalogo.disabled = true;
+        subcatalogo.innerHTML = "<option>Selecione um catálogo primeiro…</option>";
+        resumo.textContent = "";
+        return;
+      }
+
+      subcatalogo.disabled = false;
+      subcatalogo.innerHTML = "<option value=''>Selecione…</option>";
+
+      dados[catalogo.value].forEach(sub => {
+        const option = document.createElement("option");
+        option.value = sub;
+        option.textContent = sub;
+
+        // adiciona tooltip
+        if (tooltips[sub]) {
+          option.title = tooltips[sub];
+        }
+
+        subcatalogo.appendChild(option);
+      });
+    });
+
+    subcatalogo.addEventListener("change", () => {
+      if (subcatalogo.value) {
+        resumo.textContent =
+          `Selecionado: ${catalogo.value} → ${subcatalogo.value}`;
+      } else {
+        resumo.textContent = "";
+      }
+    });
+  </script>
+
+</body>
+</html>
