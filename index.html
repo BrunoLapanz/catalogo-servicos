@@ -2,6 +2,7 @@
 <html lang="pt-br">
 <head>
   <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>Catálogo de Serviços - Simulação</title>
   <style>
     body {
@@ -11,16 +12,16 @@
     }
 
     .card {
-      max-width: 500px;
+      max-width: 760px;
       margin: auto;
       background: #fff;
-      border-radius: 8px;
+      border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0,0,0,0.1);
       overflow: hidden;
     }
 
     .header {
-      background: #0b4da2; 
+      background: #0b4da2;
       color: #fff;
       padding: 14px 18px;
       font-size: 18px;
@@ -38,19 +39,115 @@
       color: #333;
     }
 
-    select {
+    select, input {
       width: 100%;
       padding: 10px;
       margin-bottom: 16px;
       border-radius: 6px;
       border: 1px solid #ccc;
       font-size: 14px;
+      background: #fff;
+      box-sizing: border-box;
     }
 
-    .resumo {
+    .hint {
+      font-size: 12px;
+      color: #777;
+      margin-top: -10px;
+      margin-bottom: 14px;
+    }
+
+    .options-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin: 6px 0 14px;
+    }
+
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(11,77,162,0.25);
+      background: rgba(11,77,162,0.08);
       font-size: 13px;
-      color: #555;
-      margin-top: 10px;
+      font-weight: 700;
+      cursor: pointer;
+      user-select: none;
+      transition: 0.2s ease;
+      white-space: nowrap;
+      color: #0b4da2;
+    }
+
+    .pill:hover {
+      background: rgba(11,77,162,0.12);
+    }
+
+    .pill input {
+      width: 14px;
+      height: 14px;
+      margin: 0;
+      cursor: pointer;
+      accent-color: #0b4da2;
+    }
+
+    .row {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+
+    .small-note {
+      font-size: 12px;
+      color: #666;
+      margin-top: -8px;
+      margin-bottom: 12px;
+    }
+
+    /* ✅ Botões */
+    .actions {
+      margin-top: 8px;
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .btn {
+      border: 0;
+      padding: 12px 14px;
+      border-radius: 8px;
+      font-weight: 700;
+      cursor: pointer;
+      font-size: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+      transition: 0.15s ease;
+    }
+
+    .btn-primary {
+      background: #0b4da2;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      filter: brightness(1.05);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .btn-secondary {
+      background: #eef2ff;
+      color: #1f2a44;
+    }
+
+    .btn-secondary:hover {
+      filter: brightness(0.98);
     }
   </style>
 </head>
@@ -60,6 +157,7 @@
     <div class="header">IT Request</div>
 
     <div class="content">
+
       <label for="catalogo">Catálogo de serviços</label>
       <select id="catalogo">
         <option value="">Selecione…</option>
@@ -69,109 +167,231 @@
       <select id="subcatalogo" disabled>
         <option value="">Selecione um catálogo primeiro…</option>
       </select>
+      <div class="hint">Passe o mouse sobre o item do subcatálogo para ver o tooltip.</div>
 
-      <div class="resumo" id="resumo"></div>
+      <!-- Alinhado? -->
+      <div class="options-row">
+        <label class="pill" title="Marque se já conversou com algum atendente antes de abrir o chamado.">
+          <input type="checkbox" id="alinhadoCheck" disabled />
+          Alinhado?
+        </label>
+      </div>
+
+      <div id="blocoAtendente" style="display:none;">
+        <div class="row">
+          <div>
+            <label for="atendente">Atendente</label>
+            <select id="atendente">
+              <option value="">Selecione…</option>
+              <option value="Heryan Lois Rezende">Heryan Lois Rezende</option>
+              <option value="Joao Vitor Coelho">Joao Vitor Coelho</option>
+              <option value="Luis Fellipe Klock">Luis Fellipe Klock</option>
+              <option value="Maiara Paula de J...">Maiara Paula de Jesus</option>
+              <option value="Matheus Nycolas">Matheus Nycolas</option>
+              <option value="Willian Xister">Bruno Marcelo Oliveira</option>
+              <option value="Willian Xister">João Coelho</option>
+              <option value="Willian Xister">Andre Richartz Farias</option>
+              <option value="Willian Xister">Matheus Nycolas Maiola</option>
+              <option value="Willian Xister">Filipe Eviton Anacleto</option>
+              
+            </select>
+            <div class="small-note">Selecione o atendente com quem foi alinhado.</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Botão de abrir chamado e limpar -->
+      <div class="actions">
+        <button class="btn btn-primary" id="btnAbrir" disabled>Abrir chamado</button>
+        <button class="btn btn-secondary" id="btnLimpar" type="button">Limpar</button>
+      </div>
+
     </div>
   </div>
 
   <script>
-    const dados = {
-      "Acessos": [
-        "Criação de conta",
-        "Problemas de acesso à conta",
-        "Solicitar acessos",
-        "Remover acessos",
-        "Solicitar acesso admin"
-      ],
-      "Aquisição de recursos de TI": [
-        "Compra de hardware",
-        "Sistemas",
-        "Softwares comerciais"
-      ],
-      "Solicitar suporte": [
-        "Computador",
-        "Periféricos",
-        "Impressoras",
-        "E-mail",
-        "Telefonia",
-        "Software",
-        "Movimentação de ativos",
-        "Empréstimo de ativos",
-        "SE Suite",
-        "Wi-fi visitantes",
-        "VPN/WARP",
-        "Manutenção de rede",
-        "Liberação de sites ou portas",
-        "Configuração DNS",
-        "Servidor",
-        "Backup de dados",
-        "Alertas"
-      ],
-      "Gerenciar ativos": [
-        "Descarte de ativos",
-        "Orçamento de reparo"
-      ]
-    };
+    document.addEventListener("DOMContentLoaded", () => {
+      const dados = {
+        "Acessos": [
+          "Criação de conta",
+          "Problemas de acesso à conta",
+          "Solicitar acessos",
+          "Remover acessos",
+          "Solicitar acesso admin"
+        ],
+        "Aquisição de recursos de TI": [
+          "Compra de hardware",
+          "Sistemas",
+          "Softwares comerciais"
+        ],
+        "Solicitar suporte": [
+          "Computador",
+          "Periféricos",
+          "Impressoras",
+          "E-mail",
+          "Telefonia",
+          "Software",
+          "Movimentação de ativos",
+          "Empréstimo de ativos",
+          "SE Suite",
+          "Wi-fi visitantes",
+          "VPN/WARP",
+          "Manutenção de internet",
+          "Liberação de sites ou portas",
+          "Infraestrutura de rede",
+          "Servidor",
+          "Alertas"
+        ],
+        "Gerenciar ativos": [
+          "Descarte de ativos",
+          "Orçamento de reparo"
+        ]
+      };
 
-    // Tooltip
-    const tooltips = {
-      "Periféricos": "Ex.: Mouse, teclado, headset",
-      "Computador": "Ex.: Notebook, desktop, não liga, lentidão",
-      "E-mail": "Ex.: Erro ao enviar, configurar assinatura",
-      "VPN/WARP": "Ex.: Erro de conexão, acesso externo",
-      "Impressoras": "Ex.: Não imprime, erro de fila",
-      "Software": "Ex.: Teams, Word, Power BI, Adobe Reader",
-      "Manutenção de rede": "Ex.: Internet lenta, sem conexão",
-      "Liberação de sites ou portas": "Ex.: site bloqueado, acesso a sistema"
-    };
+      const tooltips = {
+        "Criação de conta": "Criar conta para novo colaborador ou parceiro",
+        "Problemas de acesso à conta": "Sistema, bloqueio de conta ou senha",
+        "Solicitar acessos": "Sistema ou componente",
+        "Remover acessos": "Revogar acesso de colaborador",
+        "Solicitar acesso admin": "Permissão elevada ou perfil admin",
 
-    const catalogo = document.getElementById("catalogo");
-    const subcatalogo = document.getElementById("subcatalogo");
-    const resumo = document.getElementById("resumo");
+        "Compra de hardware": "Compra de computador ou equipamento",
 
-    Object.keys(dados).forEach(cat => {
-      const option = document.createElement("option");
-      option.value = cat;
-      option.textContent = cat;
-      catalogo.appendChild(option);
-    });
+        "Computador": "Problemas físicos gerais no notebook ou desktop",
+        "Periféricos": "Mouse, teclado, headset, webcam",
+        "Impressoras": "Instalação ou erro ao imprimir",
+        "E-mail": "Problemas, criação ou alterações na caixa de e-mail",
+        "Telefonia": "Ramal, 3CX ou MicroSIP",
+        "Software": "Teams, Office e outros aplicativos corporativos",
+        "Movimentação de ativos": "Troca de responsável ou troca de posto",
+        "Empréstimo de ativos": "Solicitação temporária de ativo",
+        "SE Suite": "Equipes, permissões ou erros na intranet",
+        "Wi-fi visitantes": "Solicitar acesso ao Wi-Fi para visitantes",
+        "VPN/WARP": "Problemas ou configuração de VPN e acesso remoto",
+        "Manutenção de internet": "Internet lenta, instável ou sem conexão",
+        "Liberação de sites ou portas": "Liberação de site bloqueado ou acesso externo na rede",
+        "Infraestrutura de rede": "Ajustes técnicos (DNS, portas, roteamento)",
+        "Servidor": "Máquinas virtuais e ambientes internos",
+        "Alertas": "Alerta de segurança",
 
-    catalogo.addEventListener("change", () => {
-      subcatalogo.innerHTML = "";
+        "Descarte de ativos": "Baixa de equipamento",
+        "Orçamento de reparo": "Avaliação para conserto"
+      };
 
-      if (!catalogo.value) {
-        subcatalogo.disabled = true;
-        subcatalogo.innerHTML = "<option>Selecione um catálogo primeiro…</option>";
-        resumo.textContent = "";
-        return;
+      const catalogo = document.getElementById("catalogo");
+      const subcatalogo = document.getElementById("subcatalogo");
+
+      const alinhadoCheck = document.getElementById("alinhadoCheck");
+      const blocoAtendente = document.getElementById("blocoAtendente");
+      const atendente = document.getElementById("atendente");
+
+      const btnAbrir = document.getElementById("btnAbrir");
+      const btnLimpar = document.getElementById("btnLimpar");
+
+      function atualizarEstadoBotao() {
+        const temBase = !!(catalogo.value && subcatalogo.value);
+        const precisaAtendente = alinhadoCheck.checked;
+        const atendenteOk = !precisaAtendente || !!atendente.value;
+
+        btnAbrir.disabled = !(temBase && atendenteOk);
       }
 
-      subcatalogo.disabled = false;
-      subcatalogo.innerHTML = "<option value=''>Selecione…</option>";
+      function resetarFormulario() {
+        catalogo.value = "";
+        subcatalogo.innerHTML = "<option value=''>Selecione um catálogo primeiro…</option>";
+        subcatalogo.disabled = true;
 
-      dados[catalogo.value].forEach(sub => {
+        alinhadoCheck.checked = false;
+        alinhadoCheck.disabled = true;
+        blocoAtendente.style.display = "none";
+        atendente.value = "";
+
+        btnAbrir.disabled = true;
+      }
+
+      // popula catálogo
+      Object.keys(dados).forEach(cat => {
         const option = document.createElement("option");
-        option.value = sub;
-        option.textContent = sub;
+        option.value = cat;
+        option.textContent = cat;
+        catalogo.appendChild(option);
+      });
 
-        // adiciona tooltip
-        if (tooltips[sub]) {
-          option.title = tooltips[sub];
+      catalogo.addEventListener("change", () => {
+        subcatalogo.innerHTML = "";
+
+        // reset dependências
+        subcatalogo.disabled = true;
+
+        alinhadoCheck.checked = false;
+        alinhadoCheck.disabled = true;
+        blocoAtendente.style.display = "none";
+        atendente.value = "";
+
+        if (!catalogo.value) {
+          subcatalogo.innerHTML = "<option value=''>Selecione um catálogo primeiro…</option>";
+          atualizarEstadoBotao();
+          return;
         }
 
-        subcatalogo.appendChild(option);
-      });
-    });
+        subcatalogo.disabled = false;
+        subcatalogo.innerHTML = "<option value=''>Selecione…</option>";
 
-    subcatalogo.addEventListener("change", () => {
-      if (subcatalogo.value) {
-        resumo.textContent =
-          `Selecionado: ${catalogo.value} → ${subcatalogo.value}`;
-      } else {
-        resumo.textContent = "";
-      }
+        dados[catalogo.value].forEach(sub => {
+          const option = document.createElement("option");
+          option.value = sub;
+          option.textContent = sub;
+          if (tooltips[sub]) option.title = tooltips[sub];
+          subcatalogo.appendChild(option);
+        });
+
+        atualizarEstadoBotao();
+      });
+
+      subcatalogo.addEventListener("change", () => {
+        if (subcatalogo.value) {
+          alinhadoCheck.disabled = false;
+        } else {
+          alinhadoCheck.checked = false;
+          alinhadoCheck.disabled = true;
+          blocoAtendente.style.display = "none";
+          atendente.value = "";
+        }
+        atualizarEstadoBotao();
+      });
+
+      alinhadoCheck.addEventListener("change", () => {
+        if (alinhadoCheck.checked) {
+          blocoAtendente.style.display = "block";
+        } else {
+          blocoAtendente.style.display = "none";
+          atendente.value = "";
+        }
+        atualizarEstadoBotao();
+      });
+
+      atendente.addEventListener("change", atualizarEstadoBotao);
+
+      btnAbrir.addEventListener("click", () => {
+        const tip = tooltips[subcatalogo.value] || "-";
+        const alinhadoTxt = alinhadoCheck.checked ? "Sim" : "Não";
+        const atendenteTxt = alinhadoCheck.checked ? (atendente.value || "(não informado)") : "-";
+
+        alert(
+          `Chamado simulado!\n\n` +
+          `Catálogo: ${catalogo.value}\n` +
+          `Subcatálogo: ${subcatalogo.value}\n` +
+          `Tooltip: ${tip}\n` +
+          `Alinhado: ${alinhadoTxt}\n` +
+          `Atendente: ${atendenteTxt}`
+        );
+      });
+
+      btnLimpar.addEventListener("click", resetarFormulario);
+
+      // estado inicial
+      resetarFormulario();
     });
   </script>
-
 </body>
 </html>
